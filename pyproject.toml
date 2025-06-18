@@ -1,0 +1,28 @@
+[build-system]
+
+
+[project]
+name = "is-it-even-halal"
+version = "1.0.0"
+requires-python = ">=3.12.10"
+authors = [{name= "Rezwan Matin", email = "rezwanmatin@gmail.com"}]
+maintainers = [{name = "Rezwan Matin", email = "rezwanmatin@gmail.com"}]
+description = "A simple web application for finding whether a branded food item has halal or not."
+readme = "README.md"
+keywords = ["usda", "food", "halal", "muslim"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python"
+]
+
+[project.optional-dependencies]
+
+
+[project.urls]
+
+
+[project.scripts]
+is-it-even-halal = "cli-app.__main__"
+
+[project.gui-scripts]
+is-it-even-halal-gui = "web-app.__main__"
