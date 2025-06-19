@@ -1,0 +1,15 @@
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FFF;
+  font-family: Calibri, Arial, sans-serif; 
+  text-align: center;
+}
+
+p {
+  background-color: #FFF;
+  font-family: Calibri, Arial, sans-serif; 
+}
+
