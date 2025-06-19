@@ -13,8 +13,15 @@ animal_derived_ingredients = [
     "enzymes",
     "whey",
     "lard",
+    "meat",
     "bacon",
+    "pepperoni",
+    "pork",
     "ham",
+    "chicken",
+    "beef",
+    "lamb",
+    "goat",
     "gelatin",
     "rennet",
     "l-cysteine",
@@ -65,6 +72,8 @@ if response.status_code == 200:
     if haram_list:
         print("This item might not be halal as it contains:")
         print(haram_list)
+    elif not response.json()["foods"]:
+        print("Information not found! Please type in full product name.")
     else:
         print("This item is halal.")
 

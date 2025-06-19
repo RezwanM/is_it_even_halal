@@ -19,8 +19,15 @@ def index():
         "enzymes",
         "whey",
         "lard",
+        "meat",
         "bacon",
+        "pepperoni",
+        "pork",
         "ham",
+        "chicken",
+        "beef",
+        "lamb",
+        "goat",
         "gelatin",
         "rennet",
         "l-cysteine",
@@ -69,13 +76,13 @@ def index():
                         haram_list.add(ingredient.strip().lower())
             if haram_list:
                 message = f"The item might not be halal as it contains: {haram_list}"
-                return redirect(url_for("result", message=message))
+            elif not response.json()["foods"]:
+                message = f"Information not found! Please type in full product name."
             else:
                 message = "The item is halal."
-                return redirect(url_for("result", message=message))
         else:
             message = "Error! Please try again!"
-            return redirect(url_for("result", message=message))
+        return redirect(url_for("result", message=message))
     return render_template("index.html")
 
 
