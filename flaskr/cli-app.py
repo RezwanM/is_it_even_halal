@@ -43,7 +43,15 @@ haram_ingredients = (
     + insects_derived_ingredients
 )
 query = input("Enter the item name: ")
-params = {"query": query, "dataType": ["Branded"], "api_key": api_key}
+params = {
+    "query": query,
+    "requireAllWords": "true",
+    "dataType": ["Branded"],
+    "marketCountry": "United States",
+    "numberOfResultsPerPage": 1,
+    "pageSize": 1,
+    "api_key": api_key,
+}
 response = requests.get(url, params=params)
 if response.status_code == 200:
     with open("result.json", "a", encoding="utf-8") as f:

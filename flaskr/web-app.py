@@ -7,6 +7,7 @@ from flask import Flask, redirect, url_for, request, render_template
 
 app = Flask(__name__)
 
+
 @app.route("/", methods=["POST", "GET"])
 def index():
     load_dotenv()
@@ -49,7 +50,15 @@ def index():
     )
     if request.method == "POST":
         query = request.form["nm"]
-        params = {"query": query, "dataType": ["Branded"], "api_key": api_key}
+        params = {
+            "query": query,
+            "requireAllWords": "true",
+            "dataType": ["Branded"],
+            "marketCountry": "United States",
+            "numberOfResultsPerPage": 1,
+            "pageSize": 1,
+            "api_key": api_key,
+        }
         response = requests.get(url, params=params)
         if response.status_code == 200:
             for item in response.json()["foods"]:
@@ -68,6 +77,7 @@ def index():
             message = "Error! Please try again!"
             return redirect(url_for("result", message=message))
     return render_template("index.html")
+
 
 @app.route("/result/<string:message>")
 def result(message: str):
