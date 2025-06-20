@@ -13,3 +13,7 @@ p {
   font-family: Calibri, Arial, sans-serif; 
 }
 
+ul {
+  padding-left: 0;
+  counter-reset: item; 
+}

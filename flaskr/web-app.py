@@ -3,9 +3,11 @@ import os
 import requests
 from dotenv import load_dotenv
 from flask import Flask, redirect, url_for, request, render_template
+from typing import Set
 
 
 app = Flask(__name__)
+haram_list = set()
 
 
 @app.route("/", methods=["POST", "GET"])
@@ -14,7 +16,6 @@ def index():
     api_key = os.environ.get("USDA_API_KEY")
     url = "https://api.nal.usda.gov/fdc/v1/foods/search"
     ingredients = set()
-    haram_list = set()
     animal_derived_ingredients = [
         "enzymes",
         "whey",
@@ -73,13 +74,15 @@ def index():
                 for ingredient in ingredients_list:
                     ingredients.add(ingredient.strip().lower())
                     if ingredient.strip().lower() in haram_ingredients:
-                        haram_list.add(ingredient.strip().lower())
+                        haram_list.add(ingredient.strip().upper())
             if haram_list:
-                message = f"The item might not be halal as it contains: {haram_list}"
+                message = f"Showing result for category: {response.json()["foods"][0]["foodCategory"]}.\n"
+                message += f"The item might not be halal as it contains:"
             elif not response.json()["foods"]:
                 message = f"Information not found! Please type in full product name."
             else:
-                message = "The item is halal."
+                message = f"Showing result for category: {response.json()["foods"][0]["foodCategory"]}.\n"
+                message += "The item is halal."
         else:
             message = "Error! Please try again!"
         return redirect(url_for("result", message=message))
@@ -88,7 +91,10 @@ def index():
 
 @app.route("/result/<string:message>")
 def result(message: str):
-    return render_template("result.html", message=message)
+    formatted_message = message.replace("\n", "</br>")
+    return render_template(
+        "result.html", message=formatted_message, haram_list=haram_list
+    )
 
 
 if __name__ == "__main__":

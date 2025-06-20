@@ -6,7 +6,12 @@
   </head>
   <body>
     <h1>Is It Even Halal?</h1>
-      <p>{{message}}</p>
+      <p>{{ message|safe }}</p>
+      <ul>
+        {% for ingredient in haram_list %}
+          <li>{{ ingredient }}</li>
+        {% endfor %}
+      </ul>
       <a href="{{ url_for('index') }}">
         <button>Check Another Item</button>
       </a>
