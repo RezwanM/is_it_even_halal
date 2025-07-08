@@ -2,14 +2,16 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="../static/css/index_style.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   </head>
   <body>
     <h1>Is It Even Halal?</h1>
+    {% block body %}
       <form class="form" action = "http://localhost:5000/" method = "post">
 	  <p>Enter the item name:</p>
 	  <p><input type = "text" name = "nm" /></p>
 	  <p><input class="button" type = "submit" value = "Submit" /></p>
       </form>
+    {% endblock %}
   </body>
 </html>

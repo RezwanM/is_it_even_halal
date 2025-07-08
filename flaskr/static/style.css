@@ -31,6 +31,17 @@ p {
   font-family: Calibri, Arial, sans-serif; 
 }
 
+ul {
+  padding-left: 0;
+  counter-reset: item; 
+}
+
+ul.ingredients {list-style-type: none;}
+
+li {
+  display: block;
+}
+
 input[type="submit"] {
   display: inline-block;
   padding: 15px 25px;
@@ -49,6 +60,29 @@ input[type="submit"] {
 input[type="submit"]:hover {background-color: #3e8e41}
 
 input[type="submit"]:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.button {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #04AA6D;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+.button:hover {background-color: #3e8e41}
+
+.button:active {
   background-color: #3e8e41;
   box-shadow: 0 5px #666;
   transform: translateY(4px);

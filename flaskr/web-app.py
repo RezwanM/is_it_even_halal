@@ -3,19 +3,17 @@ import os
 import requests
 from dotenv import load_dotenv
 from flask import Flask, redirect, url_for, request, render_template
-from typing import Set
-
+from typing import Set 
 
 app = Flask(__name__)
-haram_list = set()
-
 
 @app.route("/", methods=["POST", "GET"])
-def index():
+def base():
     load_dotenv()
     api_key = os.environ.get("USDA_API_KEY")
     url = "https://api.nal.usda.gov/fdc/v1/foods/search"
     ingredients = set()
+    haram_list = set() 
     animal_derived_ingredients = [
         "enzymes",
         "whey",
@@ -85,15 +83,20 @@ def index():
                 message += "The item is halal."
         else:
             message = "Error! Please try again!"
-        return redirect(url_for("result", message=message))
-    return render_template("index.html")
+        return redirect(url_for("result", message=message, haram_list=haram_list))
+    return render_template("base.html")
 
 
-@app.route("/result/<string:message>")
-def result(message: str):
+@app.route("/result/<string:message>/<string:haram_list>")
+def result(message: str, haram_list: Set[str]):
     formatted_message = message.replace("\n", "</br>")
+    haram_string = haram_list.lstrip("{").rstrip("}")
+    stripped_list = haram_string.split(",")
+    for i in range(len(stripped_list)):
+        stripped_list[i] = stripped_list[i].strip(" ").strip("'").strip("set()")
+        print(stripped_list[i])
     return render_template(
-        "result.html", message=formatted_message, haram_list=haram_list
+        "result.html", message=formatted_message, haram_list=stripped_list
     )
 
 
