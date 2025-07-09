@@ -37,12 +37,17 @@ alcohol_ingredients = [
 additives_ingredients = [
     "monoglycerides",
     "diglycerides",
+    "e471",
     "glycerin",
     "glycerol",
+    "e422",
     "shortening",
     "magensium stearate",
 ]
-insects_derived_ingredients = ["carmine (e120)"]
+insects_derived_ingredients = [
+    "carmine",
+    "e120",
+]
 haram_ingredients = (
     animal_derived_ingredients
     + alcohol_ingredients

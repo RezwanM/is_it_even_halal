@@ -3,9 +3,12 @@ import os
 import requests
 from dotenv import load_dotenv
 from flask import Flask, redirect, url_for, request, render_template
-from typing import Set 
+from typing import Set
+
+import haram_info
 
 app = Flask(__name__)
+
 
 @app.route("/", methods=["POST", "GET"])
 def base():
@@ -13,7 +16,7 @@ def base():
     api_key = os.environ.get("USDA_API_KEY")
     url = "https://api.nal.usda.gov/fdc/v1/foods/search"
     ingredients = set()
-    haram_list = set() 
+    haram_list = set()
     animal_derived_ingredients = [
         "enzymes",
         "whey",
@@ -42,12 +45,17 @@ def base():
     additives_ingredients = [
         "monoglycerides",
         "diglycerides",
+        "e471",
         "glycerin",
         "glycerol",
+        "e422",
         "shortening",
         "magensium stearate",
     ]
-    insects_derived_ingredients = ["carmine (e120)"]
+    insects_derived_ingredients = [
+        "carmine",
+        "e120",
+    ]
     haram_ingredients = (
         animal_derived_ingredients
         + alcohol_ingredients
@@ -72,7 +80,7 @@ def base():
                 for ingredient in ingredients_list:
                     ingredients.add(ingredient.strip().lower())
                     if ingredient.strip().lower() in haram_ingredients:
-                        haram_list.add(ingredient.strip().upper())
+                        haram_list.add(ingredient.strip())
             if haram_list:
                 message = f"Showing result for category: {response.json()["foods"][0]["foodCategory"]}.\n"
                 message += f"The item might not be halal as it contains:"
@@ -89,14 +97,16 @@ def base():
 
 @app.route("/result/<string:message>/<string:haram_list>")
 def result(message: str, haram_list: Set[str]):
-    formatted_message = message.replace("\n", "</br>")
+    formatted_message = message.replace("\n", "<br>")
     haram_string = haram_list.lstrip("{").rstrip("}")
     stripped_list = haram_string.split(",")
     for i in range(len(stripped_list)):
         stripped_list[i] = stripped_list[i].strip(" ").strip("'").strip("set()")
-        print(stripped_list[i])
     return render_template(
-        "result.html", message=formatted_message, haram_list=stripped_list
+        "result.html",
+        message=formatted_message,
+        haram_list=stripped_list,
+        haram_dict=haram_info.info,
     )
 
 

@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 {% block body %}
-<p>{{ message|safe }}</p>
-  <ul class="ingredients">
-    {% for ingredient in haram_list %}
-      <li>{{ ingredient }}</li>
-    {% else %}
-      <li>Done!</li>
-    {% endfor %}
-  </ul>
-<a href="{{ url_for('base') }}">
-  <button class="button">Check Another Item</button>
-</a>
+  <p>{{ message | safe }}</p>
+  {% if haram_list %}
+    <ul class="ingredients">
+      {% for ingredient in haram_list %}
+        <li><b>{{ ingredient | upper }}</b></li>
+	<p>{{ haram_dict[ingredient | lower ] }}</p>
+      {% endfor %}
+    </ul><br>
+  {% endif %}
+  <br>
+  <a href="{{ url_for('base') }}">
+    <button class="button">Check Another Item</button>
+  </a>
 {% endblock %}
