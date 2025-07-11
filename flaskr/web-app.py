@@ -82,12 +82,12 @@ def base():
                     if ingredient.strip().lower() in haram_ingredients:
                         haram_list.add(ingredient.strip())
             if haram_list:
-                message = f"Showing result for category: {response.json()["foods"][0]["foodCategory"]}.\n"
+                message = f"Showing result for: {response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}\n"
                 message += f"The item might not be halal as it contains:"
             elif not response.json()["foods"]:
                 message = f"Information not found! Please type in full product name."
             else:
-                message = f"Showing result for category: {response.json()["foods"][0]["foodCategory"]}.\n"
+                message = f"Showing result for: {response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}\n"
                 message += "The item is halal."
         else:
             message = "Error! Please try again!"

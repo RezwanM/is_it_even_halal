@@ -76,7 +76,7 @@ if response.status_code == 200:
                 haram_list.add(ingredient.strip().lower())
     if haram_list:
         print(
-            f"Showing results for category: {response.json()["foods"][0]["foodCategory"]}."
+            f"Showing results for: {response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}"
         )
         print("This item might not be halal as it contains:")
         print(haram_list)
@@ -84,7 +84,7 @@ if response.status_code == 200:
         print("Information not found! Please type in full product name.")
     else:
         print(
-            f"Showing results for category: {response.json()["foods"][0]["foodCategory"]}."
+            f"Showing results for: {response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}" 
         )
         print("This item is halal.")
 
