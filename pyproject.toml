@@ -5,11 +5,17 @@
 name = "is-it-even-halal"
 version = "1.0.0"
 requires-python = ">=3.12.10"
+dependencies = [
+    "deep-translator>1.11.4",
+    "Flask>3.1.1",
+    "python-dotenv>1.1.0",
+    "requests>2.32.3",
+]
 authors = [{name= "Rezwan Matin", email = "rezwanmatin@gmail.com"}]
 maintainers = [{name = "Rezwan Matin", email = "rezwanmatin@gmail.com"}]
 description = "A simple web application for finding whether a branded food item has halal or not."
 readme = "README.md"
-keywords = ["usda", "food", "halal", "muslim"]
+keywords = ["usda", "food", "halal", "muslim", "islam"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Programming Language :: Python"
