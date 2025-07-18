@@ -1,5 +1,5 @@
 from deep_translator import GoogleTranslator
-from typing import Dict
+from typing import Dict, List
 
 
 class Info:
@@ -39,9 +39,9 @@ class Info:
             "e120": "E120 (i.e., carmine) is a red pigment extracted from cochineal insect, which is considered impure or filthy, and therefore haram.",
         }
 
-    def get_info(self, language: str) -> Dict[str, str]: 
-        for key, val in self.info.items():
-            translated_key = GoogleTranslator(source='auto', target=language).translate(text=key)
-            translated_val = GoogleTranslator(source='auto', target=language).translate(text=val)
+    def get_info(self, haram_list: List[str], language: str) -> Dict[str, str]: 
+        for ingredient in haram_list:
+            translated_key = GoogleTranslator(source='auto', target=language).translate(text=ingredient)
+            translated_val = GoogleTranslator(source='auto', target=language).translate(text=self.info[ingredient])
             self.translated_info[translated_key] = translated_val
         return self.translated_info

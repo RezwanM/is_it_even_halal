@@ -101,17 +101,18 @@ def base():
 
 @app.route("/result/<string:message>/<string:haram_list>/<string:language>")
 def result(message: str, haram_list: Set[str], language: str):
+    translated_list = []
     formatted_message = message.replace("\n", "<br>")
     haram_string = haram_list.lstrip("{").rstrip("}")
     stripped_list = haram_string.split(",")
     for i in range(len(stripped_list)):
-        stripped_list[i] = stripped_list[i].strip(" ").strip("'").strip("set()")
-        stripped_list[i] = GoogleTranslator(source='auto', target=language).translate(text=stripped_list[i])
+        stripped_list[i] = stripped_list[i].strip(" ").strip("'").strip("set()").lower()
+        translated_list.append(GoogleTranslator(source='auto', target=language).translate(text=stripped_list[i]))
     return render_template(
         "result.html",
         message=formatted_message,
-        haram_list=stripped_list,
-        haram_dict=Info().get_info(language=language),
+        haram_list=translated_list,
+        haram_dict=Info().get_info(haram_list=stripped_list, language=language),
     )
 
 
