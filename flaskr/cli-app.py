@@ -84,7 +84,7 @@ if response.status_code == 200:
         print("Information not found! Please type in full product name.")
     else:
         print(
-            f"Showing results for: {response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}" 
+            f"Showing results for: {response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}"
         )
         print("This item is halal.")
 

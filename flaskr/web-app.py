@@ -11,6 +11,7 @@ from haram_info import Info
 
 app = Flask(__name__)
 
+
 @app.route("/", methods=["POST", "GET"])
 def base():
     load_dotenv()
@@ -95,7 +96,16 @@ def base():
                 message += "The item is halal."
         else:
             message = "Error! Please try again!"
-        return redirect(url_for("result", message=GoogleTranslator(source='auto', target=lang).translate(text=message), haram_list=haram_list, language=lang))
+        return redirect(
+            url_for(
+                "result",
+                message=GoogleTranslator(source="auto", target=lang).translate(
+                    text=message
+                ),
+                haram_list=haram_list,
+                language=lang,
+            )
+        )
     return render_template("base.html")
 
 
@@ -107,7 +117,11 @@ def result(message: str, haram_list: Set[str], language: str):
     stripped_list = haram_string.split(",")
     for i in range(len(stripped_list)):
         stripped_list[i] = stripped_list[i].strip(" ").strip("'").strip("set()").lower()
-        translated_list.append(GoogleTranslator(source='auto', target=language).translate(text=stripped_list[i]))
+        translated_list.append(
+            GoogleTranslator(source="auto", target=language).translate(
+                text=stripped_list[i]
+            )
+        )
     return render_template(
         "result.html",
         message=formatted_message,
