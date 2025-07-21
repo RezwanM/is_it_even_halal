@@ -34,7 +34,9 @@ def base():
     return render_template("base.html")
 
 
-@app.route("/submit/<string:language>/<string:prompt>/<string:button>", methods=["POST", "GET"])
+@app.route(
+    "/submit/<string:language>/<string:prompt>/<string:button>", methods=["POST", "GET"]
+)
 def submit(language: str, prompt: str, button: str):
     load_dotenv()
     api_key = os.environ.get("USDA_API_KEY")
@@ -62,15 +64,19 @@ def submit(language: str, prompt: str, button: str):
                     ingredients.add(ingredient.strip().lower())
                     if ingredient.strip().lower() in haram_ingredients:
                         haram_list.add(ingredient.strip())
-            translated_output = GoogleTranslator(source="auto", target=language).translate(text=f"{response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}")
+            translated_output = GoogleTranslator(
+                source="auto", target=language
+            ).translate(
+                text=f"{response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}"
+            )
             if haram_list:
                 message = f"{messages["result_success"]} {translated_output}\n"
-                message += messages["result_success_haram"] 
+                message += messages["result_success_haram"]
             elif not response.json()["foods"]:
                 message = messages["result_failure_search"]
             else:
                 message = f"{messages["result_success"]} {translated_output}\n"
-                message += messages["result_success_halal"] 
+                message += messages["result_success_halal"]
         else:
             message = messages["result_failure_webpage"]
         return redirect(
@@ -81,11 +87,12 @@ def submit(language: str, prompt: str, button: str):
                 language=language,
             )
         )
-    return render_template("submit.html",
-                           language=language,
-                           prompt=messages["submit_prompt"],
-                           button=messages["submit_button"],
-           )
+    return render_template(
+        "submit.html",
+        language=language,
+        prompt=messages["submit_prompt"],
+        button=messages["submit_button"],
+    )
 
 
 @app.route("/result/<string:message>/<string:haram_list>/<string:language>")
