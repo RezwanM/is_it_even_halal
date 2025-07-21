@@ -9,51 +9,12 @@ api_key = os.environ.get("USDA_API_KEY")
 url = "https://api.nal.usda.gov/fdc/v1/foods/search"
 ingredients = set()
 haram_list = set()
-animal_derived_ingredients = [
-    "enzymes",
-    "whey",
-    "lard",
-    "meat",
-    "bacon",
-    "pepperoni",
-    "pork",
-    "ham",
-    "chicken",
-    "beef",
-    "lamb",
-    "goat",
-    "gelatin",
-    "rennet",
-    "l-cysteine",
-    "pepsin",
-]
-alcohol_ingredients = [
-    "alcohol",
-    "ethanol",
-    "vanilla extract",
-    "wine vinegar",
-    "malt extract",
-]
-additives_ingredients = [
-    "monoglycerides",
-    "diglycerides",
-    "e471",
-    "glycerin",
-    "glycerol",
-    "e422",
-    "shortening",
-    "magensium stearate",
-]
-insects_derived_ingredients = [
-    "carmine",
-    "e120",
-]
-haram_ingredients = (
-    animal_derived_ingredients
-    + alcohol_ingredients
-    + additives_ingredients
-    + insects_derived_ingredients
-)
+with open("messages.json", "r") as f:
+    messages_json = json.load(f)
+messages = messages_json["english"]
+with open("haram_ingredients.json", "r") as f:
+    haram_ingredients_json = json.load(f)
+haram_ingredients = haram_ingredients_json["english"].keys()
 query = input("Enter the item name: ")
 params = {
     "query": query,
@@ -74,19 +35,16 @@ if response.status_code == 200:
             ingredients.add(ingredient.strip().lower())
             if ingredient.strip().lower() in haram_ingredients:
                 haram_list.add(ingredient.strip().lower())
+    output = f"{response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}"
     if haram_list:
-        print(
-            f"Showing results for: {response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}"
-        )
-        print("This item might not be halal as it contains:")
-        print(haram_list)
+        print(f"{messages["result_success"]} {output}")
+        print(messages["result_success_haram"])
+        for ingredient in haram_list:
+            print(ingredient)
     elif not response.json()["foods"]:
-        print("Information not found! Please type in full product name.")
+        print(messages["result_failure_search"])
     else:
-        print(
-            f"Showing results for: {response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}"
-        )
-        print("This item is halal.")
-
+        print(f"{messages["result_success"]} {output}")
+        print(messages["result_success_halal"])
 else:
     print(f"Failed to search. Status code: {response.status_code}")

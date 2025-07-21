@@ -4,70 +4,46 @@ import requests
 from deep_translator import GoogleTranslator
 from dotenv import load_dotenv
 from flask import Flask, redirect, url_for, request, render_template
-from typing import Set
-
-from haram_info import Info
+from typing import Dict, Set
 
 
 app = Flask(__name__)
 
+with open("messages.json", "r") as f:
+    messages_json = json.load(f)
+
+with open("haram_ingredients.json", "r") as f:
+    haram_ingredients_json = json.load(f)
+
 
 @app.route("/", methods=["POST", "GET"])
 def base():
+    if request.method == "POST":
+        lang = request.form["lang"]
+        if not lang:
+            lang = "english"
+        messages = messages_json[lang]
+        return redirect(
+            url_for(
+                "submit",
+                language=lang,
+                prompt=messages["submit_prompt"],
+                button=messages["submit_button"],
+            )
+        )
+    return render_template("base.html")
+
+
+@app.route("/submit/<string:language>/<string:prompt>/<string:button>", methods=["POST", "GET"])
+def submit(language: str, prompt: str, button: str):
     load_dotenv()
     api_key = os.environ.get("USDA_API_KEY")
     url = "https://api.nal.usda.gov/fdc/v1/foods/search"
     ingredients = set()
     haram_list = set()
-    animal_derived_ingredients = [
-        "enzymes",
-        "whey",
-        "lard",
-        "meat",
-        "bacon",
-        "pepperoni",
-        "pork",
-        "ham",
-        "chicken",
-        "beef",
-        "lamb",
-        "goat",
-        "gelatin",
-        "rennet",
-        "l-cysteine",
-        "pepsin",
-    ]
-    alcohol_ingredients = [
-        "alcohol",
-        "ethanol",
-        "vanilla extract",
-        "wine vinegar",
-        "malt extract",
-    ]
-    additives_ingredients = [
-        "monoglycerides",
-        "diglycerides",
-        "e471",
-        "glycerin",
-        "glycerol",
-        "e422",
-        "shortening",
-        "magensium stearate",
-    ]
-    insects_derived_ingredients = [
-        "carmine",
-        "e120",
-    ]
-    haram_ingredients = (
-        animal_derived_ingredients
-        + alcohol_ingredients
-        + additives_ingredients
-        + insects_derived_ingredients
-    )
+    haram_ingredients = haram_ingredients_json[language].keys()
+    messages = messages_json[language]
     if request.method == "POST":
-        lang = request.form["lang"]
-        if not lang:
-            lang = "english"
         query = request.form["nm"]
         params = {
             "query": query,
@@ -86,47 +62,44 @@ def base():
                     ingredients.add(ingredient.strip().lower())
                     if ingredient.strip().lower() in haram_ingredients:
                         haram_list.add(ingredient.strip())
+            translated_output = GoogleTranslator(source="auto", target=language).translate(text=f"{response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}")
             if haram_list:
-                message = f"Showing result for: {response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}\n"
-                message += f"The item might not be halal as it contains:"
+                message = f"{messages["result_success"]} {translated_output}\n"
+                message += messages["result_success_haram"] 
             elif not response.json()["foods"]:
-                message = f"Information not found! Please type in full product name."
+                message = messages["result_failure_search"]
             else:
-                message = f"Showing result for: {response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}\n"
-                message += "The item is halal."
+                message = f"{messages["result_success"]} {translated_output}\n"
+                message += messages["result_success_halal"] 
         else:
-            message = "Error! Please try again!"
+            message = messages["result_failure_webpage"]
         return redirect(
             url_for(
                 "result",
-                message=GoogleTranslator(source="auto", target=lang).translate(
-                    text=message
-                ),
+                message=message,
                 haram_list=haram_list,
-                language=lang,
+                language=language,
             )
         )
-    return render_template("base.html")
+    return render_template("submit.html",
+                           language=language,
+                           prompt=messages["submit_prompt"],
+                           button=messages["submit_button"],
+           )
 
 
 @app.route("/result/<string:message>/<string:haram_list>/<string:language>")
 def result(message: str, haram_list: Set[str], language: str):
-    translated_list = []
     formatted_message = message.replace("\n", "<br>")
     haram_string = haram_list.lstrip("{").rstrip("}")
     stripped_list = haram_string.split(",")
     for i in range(len(stripped_list)):
         stripped_list[i] = stripped_list[i].strip(" ").strip("'").strip("set()").lower()
-        translated_list.append(
-            GoogleTranslator(source="auto", target=language).translate(
-                text=stripped_list[i]
-            )
-        )
     return render_template(
         "result.html",
         message=formatted_message,
-        haram_list=translated_list,
-        haram_dict=Info().get_info(haram_list=stripped_list, language=language),
+        haram_list=stripped_list,
+        haram_dict=haram_ingredients_json[language],
     )
 
 

@@ -8,18 +8,15 @@
     <h1>Is It Even Halal?</h1>
     {% block body %}
       <form class="form" action = "http://localhost:5000/" method = "post">
-	  <p>Enter the item name:</p>
-	  <p><input type = "text" name = "nm" /></p>
-	  <p><input class="button" type = "submit" value = "Submit" /></p>
-	  <label for="lang">Language </label>
+	  <p>Select your language</p>
 	  <select name="lang" id="lang">
 	    <option value="">--Select--</option>
 	    <option value="english">English</option>
 	    <option value="arabic">Arabic</option>
 	    <option value="bengali">Bengali</option>
 	  </select>
+	  <p><input class="button" type = "submit" value = "Continue" /></p>
       </form>
     {% endblock %}
-      </form>
   </body>
 </html>

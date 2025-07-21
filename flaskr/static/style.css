@@ -65,18 +65,6 @@ input[type="submit"]:active {
   transform: translateY(4px);
 }
 
-select {
-  position: absolute;
-  top: 5px;
-  right: 20px;
-}
-
-label {
-  position: absolute;
-  top: 5px;
-  right: 100px;
-}
-
 .button {
   display: inline-block;
   padding: 15px 25px;

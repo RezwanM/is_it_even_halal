@@ -1,0 +1,12 @@
+{
+  "english": {
+    "submit_prompt": "Enter item name",
+    "submit_button": "Submit",
+    "result_success": "Showing result for:",
+    "result_success_haram": "The item might not be halal as it contains:",
+    "result_success_halal": "The item is halal.",
+    "result_failure_search": "Information not found! Please type in full product name.",
+    "result_failure_webpage": "Error! Please try again!",
+    "result_button": "Check Another Item"
+  }
+}
