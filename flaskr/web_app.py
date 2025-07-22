@@ -9,10 +9,13 @@ from typing import Dict, Set
 
 app = Flask(__name__)
 
-with open("messages.json", "r") as f:
+url = "https://api.nal.usda.gov/fdc/v1/foods/search"
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+messages_file = os.path.join(project_root, "flaskr", "messages.json")
+haram_ingredients_file = os.path.join(project_root, "flaskr", "haram_ingredients.json")
+with open(messages_file, "r") as f:
     messages_json = json.load(f)
-
-with open("haram_ingredients.json", "r") as f:
+with open(haram_ingredients_file, "r") as f:
     haram_ingredients_json = json.load(f)
 
 
@@ -40,7 +43,6 @@ def base():
 def submit(language: str, prompt: str, button: str):
     load_dotenv()
     api_key = os.environ.get("USDA_API_KEY")
-    url = "https://api.nal.usda.gov/fdc/v1/foods/search"
     ingredients = set()
     haram_list = set()
     haram_ingredients = haram_ingredients_json[language].keys()

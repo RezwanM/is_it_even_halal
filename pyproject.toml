@@ -28,7 +28,12 @@ classifiers = [
 
 
 [project.scripts]
-is-it-even-halal = "cli-app.__main__"
+is-it-even-halal = "cli_app.__main__"
 
 [project.gui-scripts]
-is-it-even-halal-gui = "web-app.__main__"
+is-it-even-halal-gui = "web_app.__main__"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "."
+]

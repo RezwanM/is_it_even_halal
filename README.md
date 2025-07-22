@@ -6,7 +6,7 @@ The application created in this project has both a command-line version and a we
 
 ## Preview
 
-    $ python3 <project_root>/flaskr/cli-app.py
+    $ python3 <project_root>/flaskr/cli_app.py
     Enter the item name: marshmallow
     Showing results for: PEEPS - Just Born, Inc. - MARSHMALLOW
     This item might not be halal as it contains:
@@ -61,8 +61,8 @@ Use either the command-line version or the web version of the application.
 
 | Script             | Description                                                                         |
 | ------------------ | ----------------------------------------------------------------------------------- |
-| flaskr/cli-app.py  | For launching the command-line version of is_it_even_halal in an interactive shell. |
-| flaskr/web-app.py  | For launching the web version of is_it_even_halal on a browser.                     |
+| flaskr/cli_app.py  | For launching the command-line version of is_it_even_halal in an interactive shell. |
+| flaskr/web_app.py  | For launching the web version of is_it_even_halal on a browser.                     |
 
 ## Usage
     
