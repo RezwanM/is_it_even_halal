@@ -7,10 +7,11 @@ The application created in this project has both a command-line version and a we
 ## Preview
 
     $ python3 <project_root>/flaskr/cli_app.py
+    Select your language ("English", "Bengali", or "Arabic"): english
     Enter the item name: marshmallow
-    Showing results for: PEEPS - Just Born, Inc. - MARSHMALLOW
-    This item might not be halal as it contains:
-    {'gelatin'}
+    Showing result for: PEEPS - Just Born, Inc. - MARSHMALLOW
+    The item might not be halal as it contains:
+    - gelatin: If this protein comes from an animal which is not halal or which was not slaughtered in a halal way, then it is considered haram.
 
 ## Requirements
 
