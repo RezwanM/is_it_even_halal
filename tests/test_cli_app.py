@@ -1,7 +1,12 @@
 import os
 import pytest
 
-from flaskr.cli_app import url, messages_file, haram_ingredients_file
+from flaskr.cli_app import (
+    url,
+    ingredient_map_file,
+    messages_file,
+    haram_ingredients_file,
+)
 
 
 @pytest.fixture
@@ -13,6 +18,10 @@ def arguments():
 def test_url(arguments):
     test_url = arguments
     assert url == test_url
+
+
+def test_ingredient_map_file():
+    assert os.path.exists(ingredient_map_file)
 
 
 def test_messages_file():
