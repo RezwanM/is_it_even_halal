@@ -1,11 +1,13 @@
 import json
 import os
 import requests
+from deep_translator import GoogleTranslator
 from dotenv import load_dotenv
 
 
 url = "https://api.nal.usda.gov/fdc/v1/foods/search"
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ingredient_map_file = os.path.join(project_root, "flaskr", "ingredient_map.json")
 messages_file = os.path.join(project_root, "flaskr", "messages.json")
 haram_ingredients_file = os.path.join(project_root, "flaskr", "haram_ingredients.json")
 
@@ -14,9 +16,11 @@ def main():
     load_dotenv()
     api_key = os.environ.get("USDA_API_KEY")
     ingredients, haram_list = set(), set()
-    with open(messages_file, "r") as f:
+    with open(ingredient_map_file, "r", encoding="utf-8") as f:
+        ingredient_map_json = json.load(f)
+    with open(messages_file, "r", encoding="utf-8") as f:
         messages_json = json.load(f)
-    with open(haram_ingredients_file, "r") as f:
+    with open(haram_ingredients_file, "r", encoding="utf-8") as f:
         haram_ingredients_json = json.load(f)
     language = input('Select your language ("English", "Bengali", or "Arabic"): ')
     lang_list = ("english", "bengali", "arabic")
@@ -30,7 +34,6 @@ def main():
             )
         language = language.lower()
     messages = messages_json[language]
-    haram_ingredients = haram_ingredients_json[language].keys()
     query = input("Enter the item name: ")
     params = {
         "query": query,
@@ -49,18 +52,25 @@ def main():
             ingredients_list = item["ingredients"].split(",")
             for ingredient in ingredients_list:
                 ingredients.add(ingredient.strip().lower())
-                if ingredient.strip().lower() in haram_ingredients:
+                if ingredient.strip().lower() in haram_ingredients_json["english"]:
                     haram_list.add(ingredient.strip().lower())
-        output = f"{response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}"
+        translated_output = GoogleTranslator(source="auto", target=language).translate(
+            text=f"{response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}"
+        )
         if haram_list:
-            print(f"{messages["result_success"]} {output}")
+            print(f"{messages["result_success"]} {translated_output}")
             print(messages["result_success_haram"])
             for ingredient in haram_list:
+                ingredient = (
+                    ingredient_map_json[language][ingredient]
+                    if language != "english"
+                    else ingredient
+                )
                 print(f"- {ingredient}: {haram_ingredients_json[language][ingredient]}")
         elif not response.json()["foods"]:
             print(messages["result_failure_search"])
         else:
-            print(f"{messages["result_success"]} {output}")
+            print(f"{messages["result_success"]} {translated_output}")
             print(messages["result_success_halal"])
     else:
         print(f"Failed to search. Status code: {response.status_code}")

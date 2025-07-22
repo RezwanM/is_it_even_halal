@@ -11,11 +11,14 @@ app = Flask(__name__)
 
 url = "https://api.nal.usda.gov/fdc/v1/foods/search"
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ingredient_map_file = os.path.join(project_root, "flaskr", "ingredient_map.json")
 messages_file = os.path.join(project_root, "flaskr", "messages.json")
 haram_ingredients_file = os.path.join(project_root, "flaskr", "haram_ingredients.json")
-with open(messages_file, "r") as f:
+with open(ingredient_map_file, "r", encoding="utf-8") as f:
+    ingredient_map_json = json.load(f)
+with open(messages_file, "r", encoding="utf-8") as f:
     messages_json = json.load(f)
-with open(haram_ingredients_file, "r") as f:
+with open(haram_ingredients_file, "r", encoding="utf-8") as f:
     haram_ingredients_json = json.load(f)
 
 
@@ -45,7 +48,6 @@ def submit(language: str, prompt: str, button: str):
     api_key = os.environ.get("USDA_API_KEY")
     ingredients = set()
     haram_list = set()
-    haram_ingredients = haram_ingredients_json[language].keys()
     messages = messages_json[language]
     if request.method == "POST":
         query = request.form["nm"]
@@ -64,7 +66,7 @@ def submit(language: str, prompt: str, button: str):
                 ingredients_list = item["ingredients"].split(",")
                 for ingredient in ingredients_list:
                     ingredients.add(ingredient.strip().lower())
-                    if ingredient.strip().lower() in haram_ingredients:
+                    if ingredient.strip().lower() in haram_ingredients_json["english"]:
                         haram_list.add(ingredient.strip())
             translated_output = GoogleTranslator(
                 source="auto", target=language
@@ -87,6 +89,7 @@ def submit(language: str, prompt: str, button: str):
                 message=message,
                 haram_list=haram_list,
                 language=language,
+                button=messages["result_button"],
             )
         )
     return render_template(
@@ -97,18 +100,28 @@ def submit(language: str, prompt: str, button: str):
     )
 
 
-@app.route("/result/<string:message>/<string:haram_list>/<string:language>")
-def result(message: str, haram_list: Set[str], language: str):
+@app.route(
+    "/result/<string:message>/<string:haram_list>/<string:button>/<string:language>"
+)
+def result(message: str, haram_list: Set[str], button: str, language: str):
     formatted_message = message.replace("\n", "<br>")
     haram_string = haram_list.lstrip("{").rstrip("}")
     stripped_list = haram_string.split(",")
     for i in range(len(stripped_list)):
         stripped_list[i] = stripped_list[i].strip(" ").strip("'").strip("set()").lower()
+        print(stripped_list[i])
+        stripped_list[i] = (
+            ingredient_map_json[language][stripped_list[i]]
+            if language != "english"
+            and stripped_list[i] in ingredient_map_json[language].keys()
+            else stripped_list[i]
+        )
     return render_template(
         "result.html",
         message=formatted_message,
         haram_list=stripped_list,
         haram_dict=haram_ingredients_json[language],
+        button=button,
     )
 
 

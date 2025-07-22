@@ -8,5 +8,25 @@
     "result_failure_search": "Information not found! Please type in full product name.",
     "result_failure_webpage": "Error! Please try again!",
     "result_button": "Check Another Item"
+  },
+  "bengali": {
+    "submit_prompt": "আইটেমের নাম লিখুন",
+    "submit_button": "জমা দিন",
+    "result_success": "এর জন্য ফলাফল দেখাচ্ছে: ",
+    "result_success_haram": "আইটেমটি হালাল নাও হতে পারে যেমন এতে রয়েছে:",
+    "result_success_halal": "আইটেমটি হালাল।",
+    "result_failure_search": "তথ্য পাওয়া যায় নি! পুরো পণ্যের নাম টাইপ করুন।",
+    "result_failure_webpage": "ত্রুটি! আবার চেষ্টা করুন!",
+    "result_button": "অন্য আইটেম পরীক্ষা করুন"
+  },
+  "arabic": {
+    "submit_prompt": "أدخل اسم العنصر",
+    "submit_button": "يُقدِّم",
+    "result_success": "إظهار نتيجة:",
+    "result_success_haram": "قد لا يكون العنصر حلالًا كما يحتوي على:",
+    "result_success_halal": "العنصر حلال.",
+    "result_failure_search": "المعلومات غير موجودة! يرجى كتابة اسم المنتج الكامل.",
+    "result_failure_webpage": "خطأ! من فضلك حاول مرة أخرى!",
+    "result_button": "تحقق من عنصر آخر"
   }
 }
