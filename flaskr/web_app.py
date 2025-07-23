@@ -86,9 +86,9 @@ def submit(language: str, prompt: str, button: str):
         return redirect(
             url_for(
                 "result",
+                language=language,
                 message=message,
                 haram_list=haram_list,
-                language=language,
                 button=messages["result_button"],
             )
         )
@@ -101,9 +101,9 @@ def submit(language: str, prompt: str, button: str):
 
 
 @app.route(
-    "/result/<string:message>/<string:haram_list>/<string:button>/<string:language>"
+    "/result/<string:language>/<string:message>/<string:haram_list>/<string:button>"
 )
-def result(message: str, haram_list: Set[str], button: str, language: str):
+def result(language: str, message: str, haram_list: Set[str], button: str):
     formatted_message = message.replace("\n", "<br>")
     haram_string = haram_list.lstrip("{").rstrip("}")
     stripped_list = haram_string.split(",")
