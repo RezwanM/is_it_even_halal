@@ -10,6 +10,7 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ingredient_map_file = os.path.join(project_root, "flaskr", "ingredient_map.json")
 messages_file = os.path.join(project_root, "flaskr", "messages.json")
 haram_ingredients_file = os.path.join(project_root, "flaskr", "haram_ingredients.json")
+unconditionally_haram_list = ("lard", "bacon", "pork", "ham", "alcohol", "ethanol", "vanilla extract", "wine vinegar", "malt extract", "carmine", "e120")  
 
 
 def main():
@@ -34,7 +35,7 @@ def main():
             )
         language = language.lower()
     messages = messages_json[language]
-    query = input("Enter the item name: ")
+    query = input("Enter item name: ")
     params = {
         "query": query,
         "requireAllWords": "true",
@@ -48,30 +49,47 @@ def main():
     if response.status_code == 200:
         with open("result.json", "a", encoding="utf-8") as f:
             json.dump(response.json(), f, indent=4)
-        for item in response.json()["foods"]:
-            ingredients_list = item["ingredients"].split(",")
-            for ingredient in ingredients_list:
-                ingredients.add(ingredient.strip().lower())
-                if ingredient.strip().lower() in haram_ingredients_json["english"]:
-                    haram_list.add(ingredient.strip().lower())
-        translated_output = GoogleTranslator(source="auto", target=language).translate(
-            text=f"{response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}"
-        )
-        if haram_list:
-            print(f"{messages["result_success"]} {translated_output}")
-            print(messages["result_success_haram"])
-            for ingredient in haram_list:
-                ingredient = (
-                    ingredient_map_json[language][ingredient]
-                    if language != "english"
-                    else ingredient
-                )
-                print(f"- {ingredient}: {haram_ingredients_json[language][ingredient]}")
-        elif not response.json()["foods"]:
+        if not response.json()["foods"]:
             print(messages["result_failure_search"])
         else:
-            print(f"{messages["result_success"]} {translated_output}")
-            print(messages["result_success_halal"])
+            for item in response.json()["foods"]:
+                ingredients_list = item["ingredients"].split(",")
+                for ingredient in ingredients_list:
+                    ingredients.add(ingredient.strip().lower())
+                    if ingredient.strip().lower() in haram_ingredients_json["english"]:
+                        haram_list.add(ingredient.strip().lower())
+            brand_name = response.json()["foods"][0].get("brandName", "N/A")
+            brand_owner = response.json()["foods"][0].get("brandOwner", "N/A")
+            description = response.json()["foods"][0].get("description", "N/A")
+            translated_output = GoogleTranslator(source="auto", target=language).translate(
+                text=f"{brand_name} - {brand_owner} - {description}"
+            )
+            if haram_list:
+                print(messages["result_product"])
+                print(translated_output)
+                print(messages["result_status"])
+                unconditionally_haram = False
+                for ingredient in haram_list:
+                    if ingredient in unconditionally_haram_list:
+                        unconditionally_haram = True
+                        break
+                if unconditionally_haram:
+                    print(messages["result_haram"])
+                else:
+                    print(messages["result_might"])
+                print(messages["result_reason"])
+                for ingredient in haram_list:
+                    ingredient = (
+                        ingredient_map_json[language][ingredient]
+                        if language != "english"
+                        else ingredient
+                    )
+                    print(f"- {ingredient}: {haram_ingredients_json[language][ingredient]}")
+            else:
+                print(messages["result_product"])
+                print(translated_output)
+                print(messages["result_status"])
+                print(messages["result_halal"])
     else:
         print(f"Failed to search. Status code: {response.status_code}")
 

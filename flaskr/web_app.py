@@ -14,6 +14,7 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ingredient_map_file = os.path.join(project_root, "flaskr", "ingredient_map.json")
 messages_file = os.path.join(project_root, "flaskr", "messages.json")
 haram_ingredients_file = os.path.join(project_root, "flaskr", "haram_ingredients.json")
+unconditionally_haram_list = ("lard", "bacon", "pork", "ham", "alcohol", "ethanol", "vanilla extract", "wine vinegar", "malt extract", "carmine", "e120")  
 with open(ingredient_map_file, "r", encoding="utf-8") as f:
     ingredient_map_json = json.load(f)
 with open(messages_file, "r", encoding="utf-8") as f:
@@ -62,25 +63,37 @@ def submit(language: str, prompt: str, button: str):
         }
         response = requests.get(url, params=params)
         if response.status_code == 200:
-            for item in response.json()["foods"]:
-                ingredients_list = item["ingredients"].split(",")
-                for ingredient in ingredients_list:
-                    ingredients.add(ingredient.strip().lower())
-                    if ingredient.strip().lower() in haram_ingredients_json["english"]:
-                        haram_list.add(ingredient.strip())
-            translated_output = GoogleTranslator(
-                source="auto", target=language
-            ).translate(
-                text=f"{response.json()["foods"][0]["brandName"]} - {response.json()["foods"][0]["brandOwner"]} - {response.json()["foods"][0]["description"]}"
-            )
-            if haram_list:
-                message = f"{messages["result_success"]} {translated_output}\n"
-                message += messages["result_success_haram"]
-            elif not response.json()["foods"]:
+            if not response.json()["foods"]:
                 message = messages["result_failure_search"]
             else:
-                message = f"{messages["result_success"]} {translated_output}\n"
-                message += messages["result_success_halal"]
+                for item in response.json()["foods"]:
+                    ingredients_list = item["ingredients"].split(",")
+                    for ingredient in ingredients_list:
+                        ingredients.add(ingredient.strip().lower())
+                        if ingredient.strip().lower() in haram_ingredients_json["english"]:
+                            haram_list.add(ingredient.strip())
+                brand_name = response.json()["foods"][0].get("brandName", "N/A")
+                brand_owner = response.json()["foods"][0].get("brandOwner", "N/A")
+                description = response.json()["foods"][0].get("description", "N/A")
+                translated_output = GoogleTranslator(source="auto", target=language).translate(
+                    text=f"{brand_name} - {brand_owner} - {description}"
+                )
+                message = f"{messages["result_product"]}\n"
+                message += f"{translated_output}\n\n"
+                message += f"{messages["result_status"]}\n"
+                if haram_list:
+                    unconditionally_haram = False
+                    for ingredient in haram_list:
+                        if ingredient in unconditionally_haram_list:
+                            unconditionally_haram = True
+                            break
+                    if unconditionally_haram:
+                        message += f"{messages["result_haram"]}\n\n"
+                    else:
+                        message += f"{messages["result_might"]}\n\n"
+                    message += messages["result_reason"]
+                else:
+                    message += messages["result_halal"]
         else:
             message = messages["result_failure_webpage"]
         return redirect(
@@ -109,7 +122,6 @@ def result(language: str, message: str, haram_list: Set[str], button: str):
     stripped_list = haram_string.split(",")
     for i in range(len(stripped_list)):
         stripped_list[i] = stripped_list[i].strip(" ").strip("'").strip("set()").lower()
-        print(stripped_list[i])
         stripped_list[i] = (
             ingredient_map_json[language][stripped_list[i]]
             if language != "english"
