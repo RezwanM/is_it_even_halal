@@ -10,7 +10,20 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ingredient_map_file = os.path.join(project_root, "flaskr", "ingredient_map.json")
 messages_file = os.path.join(project_root, "flaskr", "messages.json")
 haram_ingredients_file = os.path.join(project_root, "flaskr", "haram_ingredients.json")
-unconditionally_haram_list = ("lard", "bacon", "pork", "ham", "alcohol", "beer", "ethanol", "vanilla extract", "wine vinegar", "malt extract", "carmine", "e120")  
+unconditionally_haram_list = (
+    "lard",
+    "bacon",
+    "pork",
+    "ham",
+    "alcohol",
+    "beer",
+    "ethanol",
+    "vanilla extract",
+    "wine vinegar",
+    "malt extract",
+    "carmine",
+    "e120",
+)
 
 
 def main():
@@ -53,7 +66,7 @@ def main():
             print(messages["result_failure_search"])
         else:
             for item in response.json()["foods"]:
-                ingredients_list = item["ingredients"].split(",")
+                ingredients_list = tuple(item["ingredients"].split(","))
                 for ingredient in ingredients_list:
                     ingredients.add(ingredient.strip().lower())
                     if ingredient.strip().lower() in haram_ingredients_json["english"]:
@@ -61,16 +74,14 @@ def main():
             brand_name = response.json()["foods"][0].get("brandName", "N/A")
             brand_owner = response.json()["foods"][0].get("brandOwner", "N/A")
             description = response.json()["foods"][0].get("description", "N/A")
-            translated_output = GoogleTranslator(source="auto", target=language).translate(
-                text=f"{brand_name} - {brand_owner} - {description}"
-            )
-            description_list = description.split()
+            translated_output = GoogleTranslator(
+                source="auto", target=language
+            ).translate(text=f"{brand_name} - {brand_owner} - {description}")
+            description_list = tuple(description.split())
             for word in description_list:
-                word = word.rstrip(",")
-                for word in description_list:
-                    word = word.rstrip(",").lower()
-                    if word in haram_ingredients_json["english"]:
-                        haram_list.add(word) 
+                word = word.rstrip(",").lower()
+                if word in haram_ingredients_json["english"]:
+                    haram_list.add(word)
             print(messages["result_product"])
             print(translated_output)
             print(messages["result_status"])
@@ -91,7 +102,9 @@ def main():
                         if language != "english"
                         else ingredient
                     )
-                    print(f"- {ingredient.upper()}: {haram_ingredients_json[language][ingredient]}")
+                    print(
+                        f"- {ingredient.upper()}: {haram_ingredients_json[language][ingredient]}"
+                    )
             else:
                 print(messages["result_halal"])
     else:

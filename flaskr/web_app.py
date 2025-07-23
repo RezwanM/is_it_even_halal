@@ -14,7 +14,20 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ingredient_map_file = os.path.join(project_root, "flaskr", "ingredient_map.json")
 messages_file = os.path.join(project_root, "flaskr", "messages.json")
 haram_ingredients_file = os.path.join(project_root, "flaskr", "haram_ingredients.json")
-unconditionally_haram_list = ("lard", "bacon", "pork", "ham", "alcohol", "beer", "ethanol", "vanilla extract", "wine vinegar", "malt extract", "carmine", "e120")  
+unconditionally_haram_list = (
+    "lard",
+    "bacon",
+    "pork",
+    "ham",
+    "alcohol",
+    "beer",
+    "ethanol",
+    "vanilla extract",
+    "wine vinegar",
+    "malt extract",
+    "carmine",
+    "e120",
+)
 with open(ingredient_map_file, "r", encoding="utf-8") as f:
     ingredient_map_json = json.load(f)
 with open(messages_file, "r", encoding="utf-8") as f:
@@ -47,8 +60,7 @@ def base():
 def submit(language: str, prompt: str, button: str):
     load_dotenv()
     api_key = os.environ.get("USDA_API_KEY")
-    ingredients = set()
-    haram_list = set()
+    ingredients, haram_list = set(), set()
     messages = messages_json[language]
     if request.method == "POST":
         query = request.form["nm"]
@@ -67,24 +79,25 @@ def submit(language: str, prompt: str, button: str):
                 message = messages["result_failure_search"]
             else:
                 for item in response.json()["foods"]:
-                    ingredients_list = item["ingredients"].split(",")
+                    ingredients_list = tuple(item["ingredients"].split(","))
                     for ingredient in ingredients_list:
                         ingredients.add(ingredient.strip().lower())
-                        if ingredient.strip().lower() in haram_ingredients_json["english"]:
+                        if (
+                            ingredient.strip().lower()
+                            in haram_ingredients_json["english"]
+                        ):
                             haram_list.add(ingredient.strip())
                 brand_name = response.json()["foods"][0].get("brandName", "N/A")
                 brand_owner = response.json()["foods"][0].get("brandOwner", "N/A")
                 description = response.json()["foods"][0].get("description", "N/A")
-                translated_output = GoogleTranslator(source="auto", target=language).translate(
-                    text=f"{brand_name} - {brand_owner} - {description}"
-                )
-                description_list = description.split()
+                translated_output = GoogleTranslator(
+                    source="auto", target=language
+                ).translate(text=f"{brand_name} - {brand_owner} - {description}")
+                description_list = tuple(description.split())
                 for word in description_list:
-                    word = word.rstrip(",")
-                    for word in description_list:
-                        word = word.rstrip(",").lower()
-                        if word in haram_ingredients_json["english"]:
-                            haram_list.add(word) 
+                    word = word.rstrip(",").lower()
+                    if word in haram_ingredients_json["english"]:
+                        haram_list.add(word)
                 message = f"{messages["result_product"]}\n"
                 message += f"{translated_output}\n\n"
                 message += f"{messages["result_status"]}\n"
@@ -138,7 +151,7 @@ def result(language: str, message: str, haram_list: Set[str], button: str):
     return render_template(
         "result.html",
         message=formatted_message,
-        haram_list=stripped_list,
+        haram_list=tuple(stripped_list),
         haram_dict=haram_ingredients_json[language],
         button=button,
     )
