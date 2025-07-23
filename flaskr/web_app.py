@@ -14,7 +14,7 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ingredient_map_file = os.path.join(project_root, "flaskr", "ingredient_map.json")
 messages_file = os.path.join(project_root, "flaskr", "messages.json")
 haram_ingredients_file = os.path.join(project_root, "flaskr", "haram_ingredients.json")
-unconditionally_haram_list = ("lard", "bacon", "pork", "ham", "alcohol", "ethanol", "vanilla extract", "wine vinegar", "malt extract", "carmine", "e120")  
+unconditionally_haram_list = ("lard", "bacon", "pork", "ham", "alcohol", "beer", "ethanol", "vanilla extract", "wine vinegar", "malt extract", "carmine", "e120")  
 with open(ingredient_map_file, "r", encoding="utf-8") as f:
     ingredient_map_json = json.load(f)
 with open(messages_file, "r", encoding="utf-8") as f:
@@ -78,6 +78,13 @@ def submit(language: str, prompt: str, button: str):
                 translated_output = GoogleTranslator(source="auto", target=language).translate(
                     text=f"{brand_name} - {brand_owner} - {description}"
                 )
+                description_list = description.split()
+                for word in description_list:
+                    word = word.rstrip(",")
+                    for word in description_list:
+                        word = word.rstrip(",").lower()
+                        if word in haram_ingredients_json["english"]:
+                            haram_list.add(word) 
                 message = f"{messages["result_product"]}\n"
                 message += f"{translated_output}\n\n"
                 message += f"{messages["result_status"]}\n"

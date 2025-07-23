@@ -14,7 +14,7 @@ The application created in this project has both a command-line version and a we
     Result:
     MIGHT NOT BE HALAL
     Reason:
-    - gelatin: If this protein comes from an animal which is not halal 
+    - GELATIN: If this protein comes from an animal which is not halal 
     or which was not slaughtered in a halal way, then it is considered 
     haram.
 

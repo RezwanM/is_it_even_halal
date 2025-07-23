@@ -10,7 +10,7 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ingredient_map_file = os.path.join(project_root, "flaskr", "ingredient_map.json")
 messages_file = os.path.join(project_root, "flaskr", "messages.json")
 haram_ingredients_file = os.path.join(project_root, "flaskr", "haram_ingredients.json")
-unconditionally_haram_list = ("lard", "bacon", "pork", "ham", "alcohol", "ethanol", "vanilla extract", "wine vinegar", "malt extract", "carmine", "e120")  
+unconditionally_haram_list = ("lard", "bacon", "pork", "ham", "alcohol", "beer", "ethanol", "vanilla extract", "wine vinegar", "malt extract", "carmine", "e120")  
 
 
 def main():
@@ -64,10 +64,17 @@ def main():
             translated_output = GoogleTranslator(source="auto", target=language).translate(
                 text=f"{brand_name} - {brand_owner} - {description}"
             )
+            description_list = description.split()
+            for word in description_list:
+                word = word.rstrip(",")
+                for word in description_list:
+                    word = word.rstrip(",").lower()
+                    if word in haram_ingredients_json["english"]:
+                        haram_list.add(word) 
+            print(messages["result_product"])
+            print(translated_output)
+            print(messages["result_status"])
             if haram_list:
-                print(messages["result_product"])
-                print(translated_output)
-                print(messages["result_status"])
                 unconditionally_haram = False
                 for ingredient in haram_list:
                     if ingredient in unconditionally_haram_list:
@@ -84,11 +91,8 @@ def main():
                         if language != "english"
                         else ingredient
                     )
-                    print(f"- {ingredient}: {haram_ingredients_json[language][ingredient]}")
+                    print(f"- {ingredient.upper()}: {haram_ingredients_json[language][ingredient]}")
             else:
-                print(messages["result_product"])
-                print(translated_output)
-                print(messages["result_status"])
                 print(messages["result_halal"])
     else:
         print(f"Failed to search. Status code: {response.status_code}")
