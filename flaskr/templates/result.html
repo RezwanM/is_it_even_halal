@@ -1,6 +1,16 @@
 {% extends 'base.html' %}
 {% block body %}
-  <p>{{ message | safe }}</p>
+  {% for message in message_list %}
+    {% if messages["result_might"] in message %}
+      <h2 style="color: orange;">{{ message | safe }}</h2>
+    {% elif messages["result_haram"] in message %}
+      <h2 style="color: tomato;">{{ message | safe }}</h2>
+    {% elif messages["result_halal"] in message %}
+      <h2 style="color: mediumseagreen;">{{ message | safe }}</h2>
+    {% else %}
+      <p>{{ message | safe }}</p>
+    {% endif %}
+  {% endfor %}
   {% if haram_list %}
     <ul class="ingredients">
       {% for ingredient in haram_list %}

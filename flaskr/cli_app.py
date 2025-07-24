@@ -36,7 +36,7 @@ def main():
         messages_json = json.load(f)
     with open(haram_ingredients_file, "r", encoding="utf-8") as f:
         haram_ingredients_json = json.load(f)
-    language = input('Select your language ("English", "Bengali", or "Arabic"): ')
+    language = input('Select language ("English", "Bengali", or "Arabic"): ')
     lang_list = ("english", "bengali", "arabic")
     if not language:
         language = "english"
@@ -48,7 +48,7 @@ def main():
             )
         language = language.lower()
     messages = messages_json[language]
-    query = input("Enter item name: ")
+    query = input(f"{messages["submit_prompt"]}: ")
     params = {
         "query": query,
         "requireAllWords": "true",

@@ -28,6 +28,7 @@ unconditionally_haram_list = (
     "carmine",
     "e120",
 )
+message_list = []
 with open(ingredient_map_file, "r", encoding="utf-8") as f:
     ingredient_map_json = json.load(f)
 with open(messages_file, "r", encoding="utf-8") as f:
@@ -38,6 +39,7 @@ with open(haram_ingredients_file, "r", encoding="utf-8") as f:
 
 @app.route("/", methods=["POST", "GET"])
 def base():
+    message_list.clear()
     if request.method == "POST":
         lang = request.form["lang"]
         if not lang:
@@ -76,7 +78,7 @@ def submit(language: str, prompt: str, button: str):
         response = requests.get(url, params=params)
         if response.status_code == 200:
             if not response.json()["foods"]:
-                message = messages["result_failure_search"]
+                message_list.append(messages["result_failure_search"])
             else:
                 for item in response.json()["foods"]:
                     ingredients_list = tuple(item["ingredients"].split(","))
@@ -98,9 +100,9 @@ def submit(language: str, prompt: str, button: str):
                     word = word.rstrip(",").lower()
                     if word in haram_ingredients_json["english"]:
                         haram_list.add(word)
-                message = f"{messages["result_product"]}\n"
-                message += f"{translated_output}\n\n"
-                message += f"{messages["result_status"]}\n"
+                message_list.append(f"{messages["result_product"]}<br>")
+                message_list.append(f"{translated_output}<br><br>")
+                message_list.append(f"{messages["result_status"]}<br>")
                 if haram_list:
                     unconditionally_haram = False
                     for ingredient in haram_list:
@@ -108,19 +110,18 @@ def submit(language: str, prompt: str, button: str):
                             unconditionally_haram = True
                             break
                     if unconditionally_haram:
-                        message += f"{messages["result_haram"]}\n\n"
+                        message_list.append(f"{messages["result_haram"]}<br><br>")
                     else:
-                        message += f"{messages["result_might"]}\n\n"
-                    message += messages["result_reason"]
+                        message_list.append(f"{messages["result_might"]}<br><br>")
+                    message_list.append(messages["result_reason"])
                 else:
-                    message += messages["result_halal"]
+                    message_list.append(messages["result_halal"])
         else:
-            message = messages["result_failure_webpage"]
+            message_list.append(messages["result_failure_webpage"])
         return redirect(
             url_for(
                 "result",
                 language=language,
-                message=message,
                 haram_list=haram_list,
                 button=messages["result_button"],
             )
@@ -133,11 +134,8 @@ def submit(language: str, prompt: str, button: str):
     )
 
 
-@app.route(
-    "/result/<string:language>/<string:message>/<string:haram_list>/<string:button>"
-)
-def result(language: str, message: str, haram_list: Set[str], button: str):
-    formatted_message = message.replace("\n", "<br>")
+@app.route("/result/<string:language>/<string:haram_list>/<string:button>")
+def result(language: str, haram_list: Set[str], button: str):
     haram_string = haram_list.lstrip("{").rstrip("}")
     stripped_list = haram_string.split(",")
     for i in range(len(stripped_list)):
@@ -145,12 +143,13 @@ def result(language: str, message: str, haram_list: Set[str], button: str):
         stripped_list[i] = (
             ingredient_map_json[language][stripped_list[i]]
             if language != "english"
-            and stripped_list[i] in ingredient_map_json[language].keys()
+            and stripped_list[i] in ingredient_map_json[language]
             else stripped_list[i]
         )
     return render_template(
         "result.html",
-        message=formatted_message,
+        message_list=tuple(message_list),
+        messages=messages_json[language],
         haram_list=tuple(stripped_list),
         haram_dict=haram_ingredients_json[language],
         button=button,

@@ -7,7 +7,7 @@ The application created in this project has both a command-line version and a we
 ## Preview
 
     $ python3 <project_root>/flaskr/cli_app.py
-    Select your language ("English", "Bengali", or "Arabic"): english
+    Select language ("English", "Bengali", or "Arabic"): english
     Enter item name: marshmallow
     Product:
     PEEPS - Just Born, Inc. - MARSHMALLOW
