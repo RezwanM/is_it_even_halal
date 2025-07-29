@@ -60,7 +60,7 @@ Create a file inside the project root directory and store the private API key in
     touch .env 
     echo "USDA_API_KEY=<private_api_key>" > .env
 
-### Step 5: Run the application
+### Step 6: Run the application
 Use either the command-line version or the web version of the application.
 
 ## Options
