@@ -74,3 +74,7 @@ Use either the command-line version or the web version of the application.
     
     cd <project_root>
     python3 flaskr/<cli-or-web-app-script> 
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
