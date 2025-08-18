@@ -4,7 +4,6 @@ import requests
 from deep_translator import GoogleTranslator
 from dotenv import load_dotenv
 from flask import Flask, redirect, url_for, request, render_template
-from typing import Dict, Set
 
 
 app = Flask(__name__)
@@ -135,7 +134,7 @@ def submit(language: str, prompt: str, button: str):
 
 
 @app.route("/result/<string:language>/<string:haram_list>/<string:button>")
-def result(language: str, haram_list: Set[str], button: str):
+def result(language: str, haram_list: set[str], button: str):
     haram_string = haram_list.lstrip("{").rstrip("}")
     stripped_list = haram_string.split(",")
     for i in range(len(stripped_list)):
