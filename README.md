@@ -1,4 +1,4 @@
-# is_it_even_halal
+# Is It Even Halal
 
 The idea of this project was to create an application that could check whether a food item is considered *halal* - an Arabic word meaning *permissible*, which, in the context of food, describes items which are allowed to be consumed by Muslims according to Islamic teachings. This project uses the public API provided by the U.S. Department of Agriculture (USDA) in order to obtain the relevant information on food items requested by the user. If a food item is found in the database, and the result of the query marks the item as potentially *haram* (*impermissible* in Arabic), then the output will also list out the ingredients responsible for this labelling along with a brief explanation for each ingredient. Currently, three different languages are supported in the application - English, Bengali, and Arabic. The texts are generated using the Google Translate API in the backend.
 
@@ -67,8 +67,8 @@ Use either the command-line version or the web version of the application.
 
 | Script             | Description                                                                         |
 | ------------------ | ----------------------------------------------------------------------------------- |
-| flaskr/cli_app.py  | For launching the command-line version of is_it_even_halal in an interactive shell. |
-| flaskr/web_app.py  | For launching the web version of is_it_even_halal on a browser.                     |
+| flaskr/cli_app.py  | For launching the command-line version of Is It Even Halal in an interactive shell. |
+| flaskr/web_app.py  | For launching the web version of Is It Even Halal on a browser.                     |
 
 ## Usage
     
